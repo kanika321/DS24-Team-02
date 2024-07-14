@@ -4,7 +4,8 @@ from xgboost import XGBClassifier
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
 
 # Load the CSv file
-df = pd.read_csv('feature_list.csv')
+csv_path = r"../Feature_Extraction/feature_list.csv"
+df = pd.read_csv(csv_path)
 
 # Separate features (X) and labels (y)
 X = df.drop(columns=['file', 'type'])
