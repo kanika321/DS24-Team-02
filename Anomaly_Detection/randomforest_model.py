@@ -50,7 +50,7 @@ def extract_features(data):
         features.append([mean, std, skewness, kurtosis, peak_to_peak, dominant_freq, spectral_centroid])
     return np.array(features)
 
-#Root directories
+#Load root directories -> Modify this to run the code
 nok_root_dir = r"../Data/NOK_Measurements_zipped/NOK_Measurements/NOK_Measurements"
 ok_root_dir = r"../Data/OK_Measurements_zipped/OK_Measurements"
 
