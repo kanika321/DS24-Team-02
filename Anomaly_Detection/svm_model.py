@@ -55,7 +55,7 @@ def extract_features(data):
     return np.array(features)
 
 
-#Root directories
+#Load the root directories -> Modify this to run the code
 nok_root_dir = r"../Data/NOK_Measurements_zipped/NOK_Measurements/NOK_Measurements"
 ok_root_dir = r"../Data/OK_Measurements_zipped/OK_Measurements"
 
