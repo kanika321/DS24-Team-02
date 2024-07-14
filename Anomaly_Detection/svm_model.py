@@ -7,6 +7,7 @@ from sklearn.svm import SVC
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 
+#Function to extract all parquet file paths and return
 def get_all_parquet_paths(root_dir, file_type):
     parquet_files = []
     for root, dirs, files in os.walk(root_dir):
@@ -15,6 +16,7 @@ def get_all_parquet_paths(root_dir, file_type):
                 parquet_files.append(os.path.join(root, file))
     return parquet_files
 
+#Function to load a parquet file
 def load_parquet_files(file_paths):
     data = []
     for file_path in file_paths:
@@ -25,7 +27,7 @@ def load_parquet_files(file_paths):
             print(f"Error loading {file_path}: {e}")
     return data
 
-
+#Function to downsample acoustic data
 def downsample_data(data, original_freq, target_freq):
     downsampled_data = []
     for file in data:
@@ -33,6 +35,7 @@ def downsample_data(data, original_freq, target_freq):
         downsampled_data.append(downsampled_file)
     return downsampled_data
 
+#Function to extract features
 def extract_features(data):
     features = []
     for file in data:
@@ -52,42 +55,34 @@ def extract_features(data):
     return np.array(features)
 
 
-# Define root directories
+#Root directories
 nok_root_dir = r"../Data/NOK_Measurements_zipped/NOK_Measurements/NOK_Measurements"
 ok_root_dir = r"../Data/OK_Measurements_zipped/OK_Measurements"
 
-# Get all 100KHz parquet file paths
+#100KHz parquet file paths
 nok_100khz_files = get_all_parquet_paths(nok_root_dir, 'Sampling100KHz')
-
-
-#print("NOK 100KHz files:", nok_100khz_files)
-print("Size of the list:", len(nok_100khz_files))
-
 ok_100khz_files = get_all_parquet_paths(ok_root_dir, 'Sampling100KHz')
-print("Size of the list:", len(ok_100khz_files))
 
-
-# Load spindle data (assuming spindle data is sampled at 100 KHz)
+# Load spindle data
 nok_spindle_data = load_parquet_files(nok_100khz_files)
 ok_spindle_data = load_parquet_files(ok_100khz_files)
 
-# Get all 2MHz parquet file paths
+#2MHz parquet file paths
 nok_acoustic_files = get_all_parquet_paths(nok_root_dir, 'Sampling2000KHz')
 ok_acoustic_files = get_all_parquet_paths(ok_root_dir, 'Sampling2000KHz')
 
-# Load acoustic data (assuming acoustic data is sampled at 2 MHz)
+# Load acoustic data
 nok_acoustic_data = load_parquet_files(nok_acoustic_files)
 ok_acoustic_data = load_parquet_files(ok_acoustic_files)
 
-# Downsample acoustic data to match spindle data frequency
-original_freq_acoustic = 2000000  # 2 MHz
-target_freq = 100000  # 100 KHz
+# Downsample acoustic data
+original_freq_acoustic = 2000000 
+target_freq = 100000 
 
 nok_acoustic_data_downsampled = downsample_data(nok_acoustic_data, original_freq_acoustic, target_freq)
 ok_acoustic_data_downsampled = downsample_data(ok_acoustic_data, original_freq_acoustic, target_freq)
 print("Downsample Done")
 
-# Preprocess spindle current data
 scaler = StandardScaler()
 
 ok_spindle_data = [scaler.fit_transform(file.reshape(-1, 1)).flatten() for file in ok_spindle_data]
