@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 import xgboost as xgb
 
 #Load the CSV File
-csv_path = r"../torch-condor-template/feature_list_combined.csv"
+csv_path = r"../Feature_Extraction/feature_list_combined.csv"
 df = pd.read_csv(csv_path)
 
 df = df.dropna()
