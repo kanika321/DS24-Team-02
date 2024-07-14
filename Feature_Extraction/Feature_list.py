@@ -38,18 +38,14 @@ def extract_features(segment, sampling_rate=2e6):
     fft_magnitudes = np.abs(fft_vals)
     freqs = np.fft.fftfreq(len(segment), 1/sampling_rate)
     
-    # Dominant frequency
     dominant_freq_idx = np.argmax(fft_magnitudes)
     dominant_freq = freqs[dominant_freq_idx]
     
-    # Spectral centroid
     spectral_centroid = np.sum(freqs * fft_magnitudes) / np.sum(fft_magnitudes)
     
-    # FFT magnitude summary statistics
     fft_mean = np.mean(fft_magnitudes)
     fft_var = np.var(fft_magnitudes)
     
-    # Include the most significant FFT magnitudes (e.g., top 5)
     top_n = 5
     top_indices = np.argsort(fft_magnitudes)[-top_n:]
     top_fft_magnitudes = fft_magnitudes[top_indices]
@@ -67,17 +63,16 @@ def extract_features(segment, sampling_rate=2e6):
         'fft_var': fft_var
     }
     
-    # Add top FFT magnitudes to the features dictionary
     for i, magnitude in enumerate(top_fft_magnitudes):
         features[f'top_fft_magnitude_{i+1}'] = magnitude
     
     return features
 
-# Define root directories
+#Rroot directories -> Modify this to run the code
 nok_root_dir = r"../Data/NOK_Measurements_zipped/NOK_Measurements/NOK_Measurements"
 ok_root_dir = r"../Data/OK_Measurements_zipped/OK_Measurements"
 
-# Get all 2MHz parquet file paths
+#2MHz parquet file paths
 nok_acoustic_files = get_all_parquet_paths(nok_root_dir, 'Sampling2000KHz')
 ok_acoustic_files = get_all_parquet_paths(ok_root_dir, 'Sampling2000KHz')
 
@@ -85,7 +80,7 @@ ok_acoustic_files = get_all_parquet_paths(ok_root_dir, 'Sampling2000KHz')
 all_features_list = []
 
 # Define the chunk size (number of samples per chunk)
-chunk_size = int(2 * 10**6)  # Example: 1 second worth of data
+#chunk_size = int(2 * 10**6) 
 
 # Process NOK acoustic files
 for file_path in nok_acoustic_files:
@@ -100,26 +95,11 @@ for file_path in nok_acoustic_files:
     
     if not column_data.empty:
         features = extract_features(column_data.values.flatten())
-        # Add file identifier to features
         features['file'] = file_path
         features['type'] = 'NOK'
         all_features_list.append(features)
 
 print("Processed all NOK files")
-
-
-"""     # Process the data in chunks
-    num_chunks = int(np.ceil(len(column_data) / chunk_size))
-    for i in range(num_chunks):
-        chunk = column_data.iloc[i*chunk_size:(i+1)*chunk_size]
-        if not chunk.empty:
-            features = extract_features(chunk.values.flatten())
-            # Add file identifier to features
-            features['file'] = file_path
-            features['type'] = 'NOK'
-            all_features_list.append(features) """
-
-
 
 # Process OK acoustic files
 for file_path in ok_acoustic_files:
@@ -132,7 +112,6 @@ for file_path in ok_acoustic_files:
         print(f"Error loading {file_path}: {e}")
         continue
     
-
     # Process the entire data
     if not column_data.empty:
         features = extract_features(column_data.values.flatten())
@@ -143,22 +122,11 @@ for file_path in ok_acoustic_files:
 
 print("Processed all OK files")
 
-"""     # Process the data in chunks
-    num_chunks = int(np.ceil(len(column_data) / chunk_size))
-    for i in range(num_chunks):
-        chunk = column_data.iloc[i*chunk_size:(i+1)*chunk_size]
-        if not chunk.empty:
-            features = extract_features(chunk.values.flatten())
-            # Add file identifier to features
-            features['file'] = file_path
-            features['type'] = 'OK'
-            all_features_list.append(features) """
-
 # Convert the list of feature dictionaries to a DataFrame
 all_features_df = pd.DataFrame(all_features_list)
 
 # Define the output CSV file path
-output_csv_path = r"../torch-condor-template/feature_list1.csv"
+output_csv_path = r"../Feature_Extractioon/feature_list1.csv"
 
 # Save the features dataframe to a CSV file
 all_features_df.to_csv(output_csv_path, index=False)
