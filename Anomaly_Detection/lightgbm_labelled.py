@@ -4,7 +4,8 @@ from sklearn.metrics import classification_report, accuracy_score, confusion_mat
 import lightgbm as lgb
 
 # Load CSV
-df = pd.read_csv('../Feature_Extraction/feature_list1.csv')
+csv_path = r"../Feature_Extraction/feature_list1.csv"
+df = pd.read_csv(csv_path)
 
 # Separate features (X) and target (y)
 X = df.drop(columns=['file', 'type'])  
